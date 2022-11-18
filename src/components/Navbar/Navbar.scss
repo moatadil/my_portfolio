@@ -1,0 +1,212 @@
+@import url('https://fonts.googleapis.com/css?family=Kanit:900');
+
+$LIGHTING_FLOOR: 1;
+$LIGHTING_CEIL: 2;
+$LIGHTING_FLAT: 3;
+
+@mixin text3d(
+  $primary, 
+  $depth: 5, 
+  $shadowsteps: 5, 
+  $shadowincrementer: 3px, 
+  $shadowopacity: .5, 
+  $primaryshadowcolour: #000, 
+  $lighting: $LIGHTING_CEIL) {
+  $predefinedShadows: (
+    0 0 5px rgba($primaryshadowcolour, .05), 
+    0 -1px 3px rgba($primaryshadowcolour, .2), 
+    0 3px 5px rgba($primaryshadowcolour, .2));
+  $value: ();
+  @for $i from 1 through $depth {
+    $num: $i + px;
+    $hueadjust: $i;
+    @if($lighting == $LIGHTING_FLOOR) {
+      $hueadjust: ($i * 2 - $depth - 5) * 1%;
+    } @elseif($lighting == $LIGHTING_CEIL) {
+      $hueadjust: -($i*2 + $depth - 10) * 1%;
+    } @elseif($lighting == $LIGHTING_FLAT) {
+      $hueadjust: -$depth * 1%;
+    }
+    $colour: adjust-color($primary, $lightness: $hueadjust);
+    $theShadow: 0 $num 0 $colour;
+    $value: append($value, $theShadow, comma);
+  }
+  
+  @for $i from 1 through $shadowsteps {
+    @if($i >= length($predefinedShadows)) {
+      $dist: $i * $shadowincrementer;
+      $value: append($value, 0 $dist $dist rgba($primaryshadowcolour, $shadowopacity));
+    } @else {
+      $value: append($value, nth($predefinedShadows, $i));
+    }
+  }
+  
+  text-shadow: $value;
+}
+
+$primarycolour: rgb(214, 185, 185);
+
+.logo-name {
+  color: #FFF;
+  font-family: "Kanit";
+  font-size: 60px;
+  line-height:1em;
+  margin: 0;
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  
+  @include text3d(
+    adjust-color($primarycolour, $lightness: -8%), 
+    $depth: 8, 
+    $primaryshadowcolour: adjust-color($primarycolour, $lightness: -10%, $saturation: +20%),
+    $shadowopacity: .3);
+}
+.app__navbar{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding:1rem 2rem;
+    background:rgba(255,255,255,0.25);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border:1px solid rgba(255,255,255,0.18);
+    position: fixed;
+    z-index: 2;
+}
+.app__navbar-logo{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    div{
+        font-size:25pt;
+        width:90px;
+        .logo-first {
+            color: #f5f5f5;
+        }
+        .logo-second {
+            color:#17f2ff;
+        }
+        @media screen and (min-width:1000px) {
+            width: 180px;
+            height: 40px;    
+        }
+    }
+}
+.app__navbar-links {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+    li {
+        margin:0 1rem;
+        cursor: pointer;
+        flex-direction: column;
+        div{
+            width: 5px;
+            height: 5px;
+            background:transparent;
+            border-radius: 50%;
+            margin-bottom: 5px;
+        }
+        a{
+            color: var(--gray-color);
+            text-decoration:none;
+            flex-direction: column;
+            text-transform: uppercase;
+            font-weight: 500;
+            transition: all 0.3s ease-in-out;
+            &:hover {
+                color: var(--secondary-color);
+            }
+        }
+        &:hover {
+            div{
+                background:var(--secondary-color);
+            }
+        }
+    }
+    @media screen and(max-width:900px) {
+        display:none;
+    }
+}
+
+.app__navbar-menu {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background:var(--secondary-color);
+    svg {
+        width: 70%;
+        height: 70%;
+        color: var(--white-color)
+    }
+    div {
+        position: fixed;
+        top:0;
+        bottom: 0;
+        right: 0;
+        z-index: 5;
+        padding:1rem;
+        width: 80%;
+        height: 100vh;
+        display: flex;
+        justify-content:flex-end;
+        align-items: flex-end;
+        flex-direction: column;
+        background:url('../../assets/bgWhite.png');
+        background-color:var(--white-color);
+        background-size: cover;
+        background-repeat:repeat;
+
+        box-shadow: 0 0 20px rgba(168,168,168,0.15);
+
+        svg {
+            width: 35px;
+            height: 35px;
+            color: var(--secondary-color);
+            margin:0.5rem 1rem;
+        }
+        ul {
+            list-style: none;
+            margin: 0;
+            padding:0;
+            height: 100%;
+            width: 100%;
+
+            display: flex;
+            justify-content:flex-start;
+            align-items:flex-start;
+            flex-direction: column;
+
+            li {
+                margin:1rem;
+                a {
+                    color: var(--gray-color);
+                    text-decoration:none;
+                    font-size: 1rem;
+                    text-transform: uppercase;
+                    font-weight: 500;
+                    transition: all 0.3s ease-in-out;
+                    &:hover {
+                        color: var(--secondary-color);
+                    }
+                }
+            }
+        }
+        @media screen and (min-width: 900px){
+            display: none;
+        }
+    }
+    @media screen and (min-width: 900px){
+        display: none;
+    }
+}
